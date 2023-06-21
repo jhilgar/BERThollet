@@ -3,13 +3,12 @@ import datasets as ds
 
 def train_model(tokenizer_file, tokenized_dataset):
 
-    #fix tokenizer json
-    tokenizer = tr.PreTrainedTokenizerFast(tokenizer_file = tokenizer_file)
+    tokenizer = tr.PreTrainedTokenizerFast(tokenizer_file = tokenizer_file, return_special_tokens_mask = True)
     tokenizer.mask_token = "[MASK]"
     tokenizer.pad_token = "[PAD]"
     tokenizer.cls_token = "[CLS]"
 
-    config = tr.BertConfig(vocab_size = 512)
+    config = tr.BertConfig(vocab_size = 16_384)
     model = tr.BertForMaskedLM(config = config)
 
     data_collator = tr.DataCollatorForLanguageModeling(
@@ -24,7 +23,9 @@ def train_model(tokenizer_file, tokenized_dataset):
         save_steps = 10_000,
         save_total_limit = 2,
         prediction_loss_only = True,
-        remove_unused_columns = True
+        remove_unused_columns = True,
+        per_device_train_batch_size = 10,
+        learning_rate = 1e-4
     )
     trainer = tr.Trainer(
         model = model,
@@ -32,4 +33,5 @@ def train_model(tokenizer_file, tokenized_dataset):
         data_collator = data_collator,
         train_dataset = tokenized_dataset,
     )
+
     trainer.train()

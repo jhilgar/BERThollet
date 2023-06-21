@@ -8,7 +8,7 @@ def load_tokenized_data(path):
 def train_tokenizer(sequence, filename):
     tokenizer = tk.Tokenizer(tk.models.BPE())
     special_tokens = ["[CLS]", "[MASK]", "[PAD]"]
-    trainer = tk.trainers.BpeTrainer(vocab_size = 512, special_tokens = special_tokens)
+    trainer = tk.trainers.BpeTrainer(vocab_size = 16_384, special_tokens = special_tokens)
     tokenizer.train_from_iterator(sequence, trainer = trainer)
 
     cls_token_id = tokenizer.token_to_id("[CLS]")
