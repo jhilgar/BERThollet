@@ -28,7 +28,7 @@ def tokenize_data(tokenizer_file, sequences, output_file):
     tokenizer.mask_token = "[MASK]"
     
     dataset = ds.Dataset.from_dict(sequences)
-    tokenized_dataset = dataset.map(lambda data: tokenizer(data["sequences"], padding = "max_length", truncation = True, max_length = 512), batched = True)
+    tokenized_dataset = dataset.map(lambda data: tokenizer(data["input_ids"], padding = "max_length", truncation = True, max_length = 512), batched = True)
     tokenized_dataset.save_to_disk(output_file)
     return tokenized_dataset
 

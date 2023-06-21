@@ -1,20 +1,13 @@
 import transformers as tr
 import datasets as ds
 
-def train_model(tokenized_dataset):
-    #tokenizer = tu.load_tokenizer("tokenizer.json")
-    #tokenizer = tr.PreTrainedTokenizerFast(tokenizer_file = "tokenizer.json")
+def train_model(tokenizer_file, tokenized_dataset):
 
     #fix tokenizer json
-    tokenizer = tr.PreTrainedTokenizerFast(tokenizer_file = "tokenizer")
+    tokenizer = tr.PreTrainedTokenizerFast(tokenizer_file = tokenizer_file)
     tokenizer.mask_token = "[MASK]"
     tokenizer.pad_token = "[PAD]"
     tokenizer.cls_token = "[CLS]"
-    print(tokenizer.vocab_size)
-    #dataset = ds.Dataset.from_dict(sequences)
-    def process(data):
-        return tokenizer(data["sequence"])
-    #tokenized_dataset = dataset.map(process, batched = True)
 
     config = tr.BertConfig(vocab_size = 512)
     model = tr.BertForMaskedLM(config = config)
