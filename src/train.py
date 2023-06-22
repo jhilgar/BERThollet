@@ -1,5 +1,15 @@
+import numpy
+import collections
 import transformers as tr
-import datasets as ds
+import sequence_utils as su
+
+rng = numpy.random.default_rng()
+
+def data_collator(features):
+    for feature in features:
+        token_ids = feature.pop("input_ids")
+    selection = rng.random()
+    
 
 def train_model(tokenizer_file, tokenized_dataset):
 
@@ -15,7 +25,7 @@ def train_model(tokenizer_file, tokenized_dataset):
         tokenizer = tokenizer, 
         mlm = True, 
         mlm_probability = 0.15
-        )
+    )
     training_args = tr.TrainingArguments(
         output_dir = "./training_data",
         overwrite_output_dir = True,
