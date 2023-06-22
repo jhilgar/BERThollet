@@ -11,7 +11,7 @@ def data_collator(features):
     selection = rng.random()
     
 
-def train_model(tokenizer_file, tokenized_dataset):
+def train_model(tokenizer_file, tokenized_dataset, training_data_dir):
 
     tokenizer = tr.PreTrainedTokenizerFast(tokenizer_file = tokenizer_file, return_special_tokens_mask = True)
     tokenizer.mask_token = "[MASK]"
@@ -27,7 +27,7 @@ def train_model(tokenizer_file, tokenized_dataset):
         mlm_probability = 0.15
     )
     training_args = tr.TrainingArguments(
-        output_dir = "./training_data",
+        output_dir = training_data_dir,
         overwrite_output_dir = True,
         num_train_epochs = 1,
         save_steps = 10_000,
