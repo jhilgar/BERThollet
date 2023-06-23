@@ -1,3 +1,4 @@
+import yaml
 import numpy
 import argparse
 import collections
@@ -59,23 +60,20 @@ def train_model(tokenizer, dataset, training_data_dir):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description = "BERThollet model training script")
     parser.add_argument(
-        'tokenizer_file', 
+        'config_file', 
         type = str,
-        help = 'The path to a tokenizer json file')
-    parser.add_argument(
-        'dataset_dir', 
-        type = str,
-        help = 'The path to a directory containing fasta files')
-    parser.add_argument(
-        'training_data_dir', 
-        type = str,
-        help = 'The path to a directory where training files will be out')
+        help = 'The path to the config yaml')
     args = parser.parse_args()
 
-    tokenizer = tu.load_tokenizer(args.tokenizer_file)
+    with open(args.config_file) as cf_file:
+        config = yaml.safe_load(cf_file.read())
+    
+    tokenizer = tu.load_tokenizer(config["tokenizer_file"])
+    
     dataset = ds.IterableDataset.from_generator(
         generator = su.parse_records, 
-        gen_kwargs = { "directory": args.dataset_dir }
+        gen_kwargs = { "directory": config["dataset_directory"] }
     )
     tokenized_dataset = tu.tokenize_dataset(tokenizer, dataset)
-    train_model(tokenizer, tokenized_dataset, args.training_data_dir)
+    train_model(tokenizer, tokenized_dataset, config["training_directory"])
+    

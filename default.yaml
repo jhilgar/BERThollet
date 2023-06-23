@@ -1,0 +1,3 @@
+tokenizer_file: data/BPE_16k_tokenizer.json
+dataset_directory: data/sequences
+training_directory: data/training
