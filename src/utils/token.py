@@ -11,15 +11,21 @@ def train_tokenizer(sequence, filename):
     tokenizer.save(filename)
     return tokenizer
 
-def tokenize_data(tokenizer, sequences, output_file):
-    dataset = ds.Dataset.from_dict(sequences)
-    tokenized_dataset = dataset.map(lambda data: tokenizer(data["input_ids"], padding = "max_length", truncation = True, max_length = 512), batched = True)
-    tokenized_dataset.save_to_disk(output_file)
-    return tokenized_dataset
-
 def load_tokenizer(tokenizer_file):
     tokenizer = tr.PreTrainedTokenizerFast(tokenizer_file = tokenizer_file)
     tokenizer.mask_token = "[MASK]"
     tokenizer.pad_token = "[PAD]"
     tokenizer.cls_token = "[CLS]"
     return tokenizer
+
+def tokenize_dataset(tokenizer, dataset):
+    tokenized_dataset = dataset.map(
+    lambda x: tokenizer(
+        x["input_ids"], 
+        padding = "max_length", 
+        truncation = True, 
+        max_length = 512
+        ), 
+    batched = True
+    )
+    return tokenized_dataset

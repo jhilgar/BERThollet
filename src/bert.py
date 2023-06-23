@@ -22,7 +22,16 @@ dataset = ds.IterableDataset.from_generator(
     generator = su.parse_records, 
     gen_kwargs = { "directory": str(records_dir) }
 )
-tokenized_dataset = dataset.map(lambda x: tokenizer(x["input_ids"], padding = "max_length", truncation = True, max_length = 512), batched = True)
+
+tokenized_dataset = dataset.map(
+    lambda x: tokenizer(
+        x["input_ids"], 
+        padding = "max_length", 
+        truncation = True, 
+        max_length = 512
+        ), 
+    batched = True
+)
 
 train.train_model(tokenizer, tokenized_dataset, training_data_dir)
 

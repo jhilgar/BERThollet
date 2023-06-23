@@ -1,7 +1,10 @@
 import numpy
+import argparse
 import collections
 
+import datasets as ds
 import transformers as tr
+import utils.token as tu
 import utils.sequence as su
 
 rng = numpy.random.default_rng()
@@ -52,3 +55,27 @@ def train_model(tokenizer, dataset, training_data_dir):
     print(batch)
     '''
     trainer.train()
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description = "BERThollet model training script")
+    parser.add_argument(
+        'tokenizer_file', 
+        type = str,
+        help = 'The path to a tokenizer json file')
+    parser.add_argument(
+        'dataset_dir', 
+        type = str,
+        help = 'The path to a directory containing fasta files')
+    parser.add_argument(
+        'training_data_dir', 
+        type = str,
+        help = 'The path to a directory where training files will be out')
+    args = parser.parse_args()
+
+    tokenizer = tu.load_tokenizer(args.tokenizer_file)
+    dataset = ds.IterableDataset.from_generator(
+        generator = su.parse_records, 
+        gen_kwargs = { "directory": args.dataset_dir }
+    )
+    tokenized_dataset = tu.tokenize_dataset(tokenizer, dataset)
+    train_model(tokenizer, tokenized_dataset, args.training_data_dir)
