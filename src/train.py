@@ -2,7 +2,7 @@ import numpy
 import collections
 
 import transformers as tr
-import sequence_utils as su
+import utils.sequence as su
 
 rng = numpy.random.default_rng()
 

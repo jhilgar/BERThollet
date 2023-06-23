@@ -1,18 +1,18 @@
 import os
 import pathlib
 
-import sequence_utils as su
-import token_utils as tu
+import utils.sequence as su
+import utils.token as tu
 import train
 import datasets as ds
 
 project_dir = pathlib.Path(__file__).parent.parent
 
-data_dir = project_dir / "data/"
-records_dir = data_dir / "sequences/"
+data_dir = project_dir / "data"
+records_dir = data_dir / "sequences"
 tokenizer_file = data_dir / "tokenizer.json"
-token_dir = data_dir / "tokens/"
-training_data_dir = data_dir / "training/"
+token_dir = data_dir / "tokens"
+training_data_dir = data_dir / "training"
 
 #tu.train_tokenizer(records, str(tokenizer_file))
 
