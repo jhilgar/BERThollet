@@ -6,7 +6,13 @@ from Bio import SeqIO
 
 rng = numpy.random.default_rng()
 
-# lazily load sequences from a fasta file
+# lazily load sequences from a single fasta file
+def parse_record(file):
+    with open(file) as handle:
+        for record in SeqIO.FastaIO.SimpleFastaParser(handle):
+            yield record[1]
+            
+# lazily load sequences from a directory of fasta files
 def parse_records(directory):
     for file in os.listdir(directory):
         if file.endswith(".fasta"):

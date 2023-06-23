@@ -1,3 +1,7 @@
-tokenizer_file: data/BPE_16k_tokenizer.json
+token_model: wordpiece
+token_training_records: data/sequences/uniparc_active_p1.fasta
+tokenizer_file: data/WP20_tokenizer.json
+vocab_size: 20
+
 dataset_directory: data/sequences
 training_directory: data/training

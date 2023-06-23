@@ -19,8 +19,7 @@ def data_collator_rgn2(features, tokenizer):
 
 def train_model(tokenizer, dataset, training_data_dir):
     tokenizer.deprecation_warnings["Asking-to-pad-a-fast-tokenizer"] = True
-
-    config = tr.BertConfig(vocab_size = 16_384)
+    config = tr.BertConfig(vocab_size = tokenizer.vocab_size)
     model = tr.BertForMaskedLM(config = config)
 
     data_collator = tr.DataCollatorForLanguageModeling(
@@ -62,14 +61,13 @@ if __name__ == "__main__":
     parser.add_argument(
         'config_file', 
         type = str,
-        help = 'The path to the config yaml')
+        help = 'The path to a config yaml')
     args = parser.parse_args()
 
     with open(args.config_file) as cf_file:
         config = yaml.safe_load(cf_file.read())
     
     tokenizer = tu.load_tokenizer(config["tokenizer_file"])
-    
     dataset = ds.IterableDataset.from_generator(
         generator = su.parse_records, 
         gen_kwargs = { "directory": config["dataset_directory"] }
