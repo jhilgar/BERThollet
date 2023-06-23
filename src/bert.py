@@ -4,6 +4,7 @@ import pathlib
 import sequence_utils as su
 import token_utils as tu
 import train
+import datasets as ds
 
 project_dir = pathlib.Path(__file__).parent.parent
 
@@ -13,16 +14,15 @@ tokenizer_file = data_dir / "tokenizer.json"
 token_dir = data_dir / "tokens"
 training_data_dir = data_dir / "training"
 
-records = su.parse_records(records_file)
+#tu.train_tokenizer(records, str(tokenizer_file))
 
-tokenizer = tu.train_tokenizer(records, tokenizer_file)
+tokenizer = tu.load_tokenizer(str(tokenizer_file))
 
-tokenizer  = tu.load_tokenizer(tokenizer_file)
-records = {
-    "input_ids": records
-}
-tu.tokenize_data(tokenizer_file, records, token_dir)
+dataset = ds.IterableDataset.from_generator(
+    generator = su.parse_records, 
+    gen_kwargs = { "filename": str(records_file) }
+)
+tokenized_dataset = dataset.map(lambda x: tokenizer(x["input_ids"]), batched = True)
 
-tokenized_dataset = tu.load_tokenized_data(token_dir)
+#train.train_model(tokenizer, records, training_data_dir)
 
-train.train_model(tokenizer_file, tokenized_dataset, training_data_dir)

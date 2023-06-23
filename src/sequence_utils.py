@@ -5,10 +5,11 @@ from Bio import SeqIO
 
 rng = numpy.random.default_rng()
 
-# load sequences from a fasta file
+# lazily load sequences from a fasta file
 def parse_records(filename):
-    records = SeqIO.parse(filename, "fasta")
-    return list(map(lambda o: str(o.seq), records))
+    with open(filename) as handle:
+        for record in SeqIO.FastaIO.SimpleFastaParser(handle):
+            yield { "input_ids": record[1] }
 
 # mask random elements of a sequence
 def mask_random(sequence, mask, fraction):
