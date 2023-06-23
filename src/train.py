@@ -31,18 +31,21 @@ def train_model(tokenizer, dataset, training_data_dir):
         prediction_loss_only = True,
         remove_unused_columns = False,
         per_device_train_batch_size = 10,
-        learning_rate = 1e-4
+        learning_rate = 1e-4,
+        max_steps = 100_000
     )
     trainer = tr.Trainer(
         model = model,
         args = training_args,
         #data_collator = lambda a: data_collator_rgn2(a, tokenizer),
-        data_collator = tr.default_data_collator,
+        #data_collator = tr.default_data_collator,
+        data_collator = data_collator,
         train_dataset = dataset,
     )
-
+    '''
     data_collator = trainer.get_train_dataloader().collate_fn
     actual_train_set = trainer._remove_unused_columns(trainer.train_dataset)
     batch = data_collator([actual_train_set[0]])
     print(batch)
-    #trainer.train()
+    '''
+    trainer.train()

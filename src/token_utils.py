@@ -2,9 +2,6 @@ import datasets as ds
 import tokenizers as tk
 import transformers as tr
 
-def load_tokenized_data(path):
-    return ds.load_from_disk(path)
-    
 def train_tokenizer(sequence, filename):
     tokenizer = tk.Tokenizer(tk.models.BPE())
     special_tokens = ["[CLS]", "[MASK]", "[PAD]"]
