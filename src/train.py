@@ -14,6 +14,8 @@ def data_collator_rgn2(features, tokenizer):
     return tr.default_data_collator(features)
 
 def train_model(tokenizer, dataset, training_data_dir):
+    tokenizer.deprecation_warnings["Asking-to-pad-a-fast-tokenizer"] = True
+
     config = tr.BertConfig(vocab_size = 16_384)
     model = tr.BertForMaskedLM(config = config)
 
@@ -32,7 +34,8 @@ def train_model(tokenizer, dataset, training_data_dir):
         remove_unused_columns = False,
         per_device_train_batch_size = 10,
         learning_rate = 1e-4,
-        max_steps = 100_000
+        max_steps = 100_000,
+        optim = "adamw_torch"
     )
     trainer = tr.Trainer(
         model = model,
