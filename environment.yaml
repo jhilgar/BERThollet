@@ -1,0 +1,16 @@
+name: BERThollet
+channels:
+  - conda-forge
+  - nvidia
+  - huggingface
+  - defaults
+dependencies:
+  - pytorch-cuda=11.7
+  - pytorch
+  - numpy
+  - tokenizers
+  - transformers
+  - datasets
+  - biopython
+  - accelerate
+  - confuse
