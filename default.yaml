@@ -1,7 +1,17 @@
-token_model: wordpiece
-token_training_records: data/sequences/uniparc_active_p1.fasta
-tokenizer_file: data/WP20_tokenizer.json
+token_model: bpe
 vocab_size: 20
 
+data_directory: data/
 dataset_directory: data/sequences
 training_directory: data/training
+
+trainingarguments:
+  num_train_epochs: 1
+  save_steps: 5000
+  save_total_limit: 2
+  prediction_loss_only: True
+  remove_unused_columns: False
+  logging_steps: 250
+  learning_rate: 1e-5
+  max_steps: 1000000
+  optim: adamw_torch

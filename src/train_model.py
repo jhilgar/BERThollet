@@ -29,13 +29,13 @@ def train_model(tokenizer, dataset, training_data_dir):
     )
     training_args = tr.TrainingArguments(
         output_dir = training_data_dir,
-        overwrite_output_dir = True,
         num_train_epochs = 1,
-        save_steps = 10_000,
+        save_steps = 5_000,
         save_total_limit = 2,
         prediction_loss_only = True,
         remove_unused_columns = False,
         per_device_train_batch_size = 10,
+        logging_steps = 250,
         learning_rate = 1e-4,
         max_steps = 100_000,
         optim = "adamw_torch"
