@@ -7,6 +7,7 @@ def load_tokenizer(tokenizer_file):
     tokenizer.mask_token = "[MASK]"
     tokenizer.pad_token = "[PAD]"
     tokenizer.cls_token = "[CLS]"
+    tokenizer.unk_token = "[UNK]"
     return tokenizer
 
 def tokenize_dataset(tokenizer, dataset):
