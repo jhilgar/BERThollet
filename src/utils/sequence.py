@@ -23,29 +23,44 @@ def parse_records(directory):
 # mask random elements of a sequence
 def mask_random(sequence, mask, fraction):
     seq_len = len(sequence)
+    labels = [-100] * 512
+    seq_len -= 1
     n_mask = math.floor(seq_len * fraction)
     mask_idx = rng.choice(seq_len, n_mask, replace = False)
+    mask_idx = [x + 1 for x in mask_idx]
     for idx in mask_idx:
+        labels[idx] = sequence[idx]
         sequence[idx] = mask
+    return labels
 
 # randomly select a single block for masking
 def mask_block(sequence, mask, fraction):
     seq_len = len(sequence)
+    labels = [-100] * 512
+    seq_len -= 1
     mask_len = math.floor(seq_len * fraction)
     mask_idx = rng.integers(0, seq_len - mask_len + 1)
+    mask_idx = [x + 1 for x in mask_idx]
+    labels[mask_idx:(mask_idx + mask_len)] = sequence[mask_idx:(mask_idx + mask_len)]
     sequence[mask_idx:(mask_idx + mask_len)] = [mask] * mask_len
+    return labels
 
 # randomly select multiple blocks for masking
 def mask_multiple_blocks(sequence, mask, fraction):
     seq_len = len(sequence)
+    labels = [-100] * 512
+    seq_len -= 1
     block_len = rng.poisson(2.5) + 1
     n_mask = seq_len * fraction
     n_positions = round(n_mask / block_len)
     mask_idx = rng.choice(seq_len, n_positions, replace = False)
+    mask_idx = [x + 1 for x in mask_idx]
     for idx in mask_idx:
         start = max(0, idx - (block_len // 2))
         end = min(seq_len, idx + (block_len // 2) + 1)
+        labels[start:end] = sequence[start:end]
         sequence[start:end] = [mask] * (end - start)
+    return labels
 
 # split sequence into blocks and shuffle
 def permute_blocks(sequence, min, max):

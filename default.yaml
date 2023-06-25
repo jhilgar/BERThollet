@@ -1,5 +1,5 @@
 token_model: bpe
-vocab_size: 20 # not including the 4 special tokens
+vocab_size: 512 # not including the 4 special tokens
 
 data_directory: data/
 dataset_directory: data/sequences

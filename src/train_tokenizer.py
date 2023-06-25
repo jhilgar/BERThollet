@@ -27,9 +27,9 @@ if __name__ == "__main__":
     
     unknown_token = "[UNK]"
     special_tokens = ["[CLS]", "[MASK]", "[PAD]", unknown_token]
-    if config["token_model"] == "wordpiece":
+    if config["token_model"].get(str) == "wordpiece":
         tokenizer = tk.Tokenizer(tk.models.WordPiece(max_input_chars_per_word = 1, unk_token = unknown_token))
-        trainer = tk.trainers.WordPieceTrainer(vocab_size = config["vocab_size"], special_tokens = special_tokens)
+        trainer = tk.trainers.WordPieceTrainer(vocab_size = config["vocab_size"].get(int), special_tokens = special_tokens)
     else:
         tokenizer = tk.Tokenizer(tk.models.BPE(unk_token = unknown_token))
         trainer = tk.trainers.BpeTrainer(vocab_size = config["vocab_size"].get(int), special_tokens = special_tokens)
@@ -41,8 +41,14 @@ if __name__ == "__main__":
 
     sequences = map(lambda x: x.translate(translation_table), sequences)
 
-    tokenizer.train_from_iterator(sequences, trainer = trainer)
-
+    tokenizer.train_from_iterator(iterator = sequences, trainer = trainer)
+    
+    cls_token_id = tokenizer.token_to_id("[CLS]")
+    tokenizer.post_processor = tk.processors.TemplateProcessing(
+        single = "[CLS] $A",
+        special_tokens = [("[CLS]", cls_token_id)]
+    )
+    
     fasta_file = pathlib.Path(args.fasta_file).name
     output_filename = str(
         project_dir / "data" / "{}_{}_{}.json".format(
