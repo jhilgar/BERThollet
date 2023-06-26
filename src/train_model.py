@@ -46,7 +46,7 @@ def train_model(tokenizer, dataset, training_data_dir):
         data_collator = tr.DataCollatorWithPadding(tokenizer = tokenizer, padding = "max_length", max_length = 512),
         train_dataset = dataset
     )
-    trainer.train()
+    trainer.train(resume_from_checkpoint = True)
 
 if __name__ == "__main__":
     project_dir = pathlib.Path(__file__).parent.parent
@@ -67,13 +67,9 @@ if __name__ == "__main__":
     config.set_file(project_dir / "default.yaml")
     
     tokenizer = tu.load_tokenizer(args.tokenizer_file)
-    dataset = ds.IterableDataset.from_generator(
-        generator = su.parse_records, 
-        gen_kwargs = { "directory": config["dataset_directory"].get(str) }
-    )
-
+    
+    dataset = ds.load_dataset("jhilgar/uniparc", split = "train", streaming = True)
     tokenized_dataset = tu.tokenize_dataset(tokenizer, dataset)
     masked_dataset = tokenized_dataset.map(lambda x: mask_data(x, tokenizer))
-
-    train_model(tokenizer, masked_dataset, config["training_directory"].get(str))
     
+    train_model(tokenizer, masked_dataset, config["training_directory"].get(str))
