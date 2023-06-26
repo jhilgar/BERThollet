@@ -9,14 +9,3 @@ def load_tokenizer(tokenizer_file):
     tokenizer.cls_token = "[CLS]"
     tokenizer.unk_token = "[UNK]"
     return tokenizer
-
-def tokenize_dataset(tokenizer, dataset):
-    tokenized_dataset = dataset.map(
-    lambda x: tokenizer(
-        x["input_ids"], 
-        truncation = True, 
-        max_length = 1024
-        ), 
-    batched = True
-    )
-    return tokenized_dataset
