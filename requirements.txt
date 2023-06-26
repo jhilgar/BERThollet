@@ -1,0 +1,7 @@
+biopython
+confuse
+huggingface_hub
+transformers
+datasets
+tokenizers
+accelerate

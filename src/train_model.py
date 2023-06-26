@@ -19,7 +19,7 @@ def train_model(tokenizer, dataset, training_directory, args):
     trainer = tr.Trainer(
         model = model,
         args = training_args,
-        data_collator = tr.DataCollatorWithPadding(tokenizer = tokenizer, padding = "max_length", max_length = 512),
+        data_collator = tr.DataCollatorForTokenClassification(tokenizer = tokenizer, padding = "longest"),
         train_dataset = dataset
     )
     trainer.train()
@@ -37,6 +37,6 @@ if __name__ == "__main__":
     tokenizer = tu.load_tokenizer(args.tokenizer_file)
     
     dataset = ds.load_dataset("jhilgar/uniparc", split = "train", streaming = True)
-    dataset = dataset.map(lambda x: tokenizer(x["input_ids"], truncation = True, max_length = 512), batched = True)
-    dataset = dataset.map(lambda x: su.mask_data(x, tokenizer), batched = True)
+    dataset = dataset.map(lambda x: tokenizer(x["input_ids"], truncation = True, max_length = 512), batched = True, batch_size = 2000)
+    dataset = dataset.map(lambda x: su.mask_data(x, tokenizer), batched = True, batch_size = 2000)
     train_model(tokenizer, dataset, config["training_directory"].get(str), config["trainingarguments"].get())
