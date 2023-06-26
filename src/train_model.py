@@ -27,12 +27,14 @@ def train_model(tokenizer, dataset, training_directory, args):
 if __name__ == "__main__":
     project_dir = pathlib.Path(__file__).parent.parent
 
+    default_tokenizer_file = str(project_dir / "defaults/bpe_512.json")
+
     parser = argparse.ArgumentParser(description = "BERThollet model training script")
-    parser.add_argument('tokenizer_file', type = str, help = "Path to a tokenizer file json")
+    parser.add_argument('--tokenizer_file', nargs = '?', default = default_tokenizer_file, type = str, help = "Path to a tokenizer file json")
     args = parser.parse_args()
 
     config = confuse.Configuration("BERThollet", __name__)
-    config.set_file(project_dir / "default.yaml")
+    config.set_file(project_dir / "defaults/config.yaml")
     
     tokenizer = tu.load_tokenizer(args.tokenizer_file)
     

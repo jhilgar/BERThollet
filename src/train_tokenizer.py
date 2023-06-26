@@ -11,19 +11,11 @@ if __name__ == "__main__":
     project_dir = pathlib.Path(__file__).parent.parent
     
     parser = argparse.ArgumentParser(description = "BERThollet tokenizer training script")
-    parser.add_argument(
-        'fasta_file',
-        type = str,
-        help = "The path to a fasta file on which to train the tokenizer"
-    )
-    parser.add_argument(
-        '--config', 
-        type = str,
-        help = 'The path to an optional config yaml')
+    parser.add_argument('fasta_file', type = str, help = "The path to a fasta file on which to train the tokenizer")
     args = parser.parse_args()
     
     config = confuse.Configuration("BERThollet", __name__)
-    config.set_file(project_dir / "default.yaml")
+    config.set_file(project_dir / "defaults/config.yaml")
     
     unknown_token = "[UNK]"
     special_tokens = ["[CLS]", "[MASK]", "[PAD]", unknown_token]
