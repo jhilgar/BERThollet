@@ -22,24 +22,12 @@ def mask_data(sequence, tokenizer):
         sequence["labels"] = su.mask_random(sequence["input_ids"], mask_id, 0.15)
     return sequence
 
-def train_model(tokenizer, dataset, training_data_dir):
+def train_model(tokenizer, dataset, training_directory, args):
     tokenizer.deprecation_warnings["Asking-to-pad-a-fast-tokenizer"] = True
     config = tr.BertConfig(vocab_size = tokenizer.vocab_size)
     model = tr.BertForMaskedLM(config = config)
     
-    training_args = tr.TrainingArguments(
-        output_dir = training_data_dir,
-        num_train_epochs = 1,
-        save_steps = 5_000,
-        save_total_limit = 2,
-        prediction_loss_only = True,
-        remove_unused_columns = False,
-        per_device_train_batch_size = 10,
-        logging_steps = 250,
-        learning_rate = 1e-4,
-        max_steps = 100_000,
-        optim = "adamw_torch"
-    )
+    training_args = tr.TrainingArguments(training_directory, **args)
     trainer = tr.Trainer(
         model = model,
         args = training_args,
@@ -71,5 +59,4 @@ if __name__ == "__main__":
     dataset = ds.load_dataset("jhilgar/uniparc", split = "train", streaming = True)
     tokenized_dataset = tu.tokenize_dataset(tokenizer, dataset)
     masked_dataset = tokenized_dataset.map(lambda x: mask_data(x, tokenizer))
-    
-    train_model(tokenizer, masked_dataset, config["training_directory"].get(str))
+    train_model(tokenizer, masked_dataset, config["training_directory"].get(str), config["trainingarguments"].get())

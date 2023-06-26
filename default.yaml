@@ -12,6 +12,9 @@ trainingarguments:
   prediction_loss_only: True
   remove_unused_columns: False
   logging_steps: 250
-  learning_rate: 1e-5
-  max_steps: 1000000
+  max_steps: 25000000
   optim: adamw_torch
+  per_device_train_batch_size: 8
+  learning_rate: 0.00001
+  adam_epsilon: 0.000001
+  warmup_steps: 20000

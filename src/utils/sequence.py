@@ -23,7 +23,7 @@ def parse_records(directory):
 # mask random elements of a sequence
 def mask_random(sequence, mask, fraction):
     seq_len = len(sequence)
-    labels = [-100] * 512
+    labels = [-100] * 1024
     seq_len -= 1
     n_mask = math.floor(seq_len * fraction)
     mask_idx = rng.choice(seq_len, n_mask, replace = False)
@@ -36,7 +36,7 @@ def mask_random(sequence, mask, fraction):
 # randomly select a single block for masking
 def mask_block(sequence, mask, fraction):
     seq_len = len(sequence)
-    labels = [-100] * 512
+    labels = [-100] * 1024
     seq_len -= 1
     mask_len = math.floor(seq_len * fraction)
     mask_idx = rng.integers(0, seq_len - mask_len + 1)
@@ -48,7 +48,7 @@ def mask_block(sequence, mask, fraction):
 # randomly select multiple blocks for masking
 def mask_multiple_blocks(sequence, mask, fraction):
     seq_len = len(sequence)
-    labels = [-100] * 512
+    labels = [-100] * 1024
     seq_len -= 1
     block_len = rng.poisson(2.5) + 1
     n_mask = seq_len * fraction

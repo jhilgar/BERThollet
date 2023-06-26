@@ -15,7 +15,7 @@ def tokenize_dataset(tokenizer, dataset):
     lambda x: tokenizer(
         x["input_ids"], 
         truncation = True, 
-        max_length = 512
+        max_length = 1024
         ), 
     batched = True
     )
