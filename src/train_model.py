@@ -20,7 +20,8 @@ def train_model(tokenizer, dataset, training_directory, args):
         model = model,
         args = training_args,
         data_collator = tr.DataCollatorForTokenClassification(tokenizer = tokenizer, padding = "longest"),
-        train_dataset = dataset
+        train_dataset = dataset,
+        #eval_dataset=mapped_tokenzed_dataset['validation']
     )
     trainer.train()
 
