@@ -18,3 +18,4 @@ trainingarguments:
   learning_rate: 0.00001
   adam_epsilon: 0.000001
   warmup_steps: 20000
+  fp16: True

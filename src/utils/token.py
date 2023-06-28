@@ -1,5 +1,3 @@
-import datasets as ds
-import tokenizers as tk
 import transformers as tr
 
 def load_tokenizer(tokenizer_file):
