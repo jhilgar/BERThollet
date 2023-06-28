@@ -13,16 +13,21 @@ import utils.sequence as su
 
 rng = numpy.random.default_rng()
 
-'''
-class AminoTrainer(Trainer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class AminoBERT(torch.nn.Module):
+    def __init__(self, config):
+        super(AminoBERT, self).__init__()
 
-    def compute_loss(self, model, inputs):
-        # implement custom logic here
-        custom_loss = 1
-        return custom_loss
-'''
+        self.classifier = torch.nn.Linear(768, 2)
+        self.dropout = torch.nn.Dropout(0.1)
+        self.model = tr.DistilBertForMaskedLM(config = config)
+
+    def forward(self, input_ids, attention_mask, labels, permutes = None):
+        output = self.model(input_ids = input_ids, attention_mask = attention_mask, labels = labels, return_dict = True)
+
+        sequence_output = self.dropout(output["hidden_states"][0])
+        logits = self.classifier(sequence_output[:, 0, :].view(-1, 768))
+        
+        return output
 
 def train_model(tokenizer, dataset, training_directory, args):
     tokenizer.deprecation_warnings["Asking-to-pad-a-fast-tokenizer"] = True
@@ -31,8 +36,8 @@ def train_model(tokenizer, dataset, training_directory, args):
     accelerator = ac.Accelerator(mixed_precision = "fp16")
     collator = tr.DataCollatorForTokenClassification(tokenizer = tokenizer, padding = "longest")
     dataloader = torch.utils.data.DataLoader(dataset, batch_size = 8, collate_fn = collator)
-    config = tr.DistilBertConfig(vocab_size = tokenizer.vocab_size)
-    model = tr.DistilBertForMaskedLM(config = config)
+    config = tr.DistilBertConfig(vocab_size = tokenizer.vocab_size, output_hidden_states = True, output_attentions = True)
+    model = AminoBERT(config = config)
     optimizer = torch.optim.AdamW(params = model.parameters())
     
     model, optimizer, data = accelerator.prepare(model, optimizer, dataloader)
@@ -40,13 +45,14 @@ def train_model(tokenizer, dataset, training_directory, args):
     model.train()
     for epoch in range(10):
         for step, batch in enumerate(data):
-
             optimizer.zero_grad()
             output = model(**batch)
-            loss = output.loss
-            accelerator.backward(loss)
-
+            accelerator.backward(output.loss)
             optimizer.step()
+    
+            
+            return
+
             if step % 250 == 0:
                 print(loss)
 
