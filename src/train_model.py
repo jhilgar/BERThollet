@@ -7,6 +7,7 @@ import torch
 import datasets as ds
 import accelerate as ac
 import transformers as tr
+import evaluate as ev
 import utils.token as tu
 import utils.sequence as su
 
@@ -27,11 +28,9 @@ def train_model(tokenizer, dataset, training_directory, args):
     tokenizer.deprecation_warnings["Asking-to-pad-a-fast-tokenizer"] = True
     dataset = dataset.remove_columns("token_type_ids")
 
-    accelerator = ac.Accelerator()
-    device = accelerator.device
-    dataset = dataset.train_test_split(test_size = 0.1)
+    accelerator = ac.Accelerator(fp16 = True)
     collator = tr.DataCollatorForTokenClassification(tokenizer = tokenizer, padding = "longest")
-    dataloader = torch.utils.data.DataLoader(dataset["train"], batch_size = 8, collate_fn = collator)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size = 8, collate_fn = collator)
     config = tr.DistilBertConfig(vocab_size = tokenizer.vocab_size)
     model = tr.DistilBertForMaskedLM(config = config)
     optimizer = torch.optim.AdamW(params = model.parameters())
@@ -41,29 +40,15 @@ def train_model(tokenizer, dataset, training_directory, args):
     model.train()
     for epoch in range(10):
         for step, batch in enumerate(data):
-            batch.to(device)
 
             optimizer.zero_grad()
-
             output = model(**batch)
             loss = output.loss
-            #oss = torch.nn.functional.cross_entropy(output, targets)
-
             accelerator.backward(loss)
 
             optimizer.step()
-
-    '''
-    training_args = tr.TrainingArguments(training_directory, **args)
-    trainer = tr.Trainer(
-        model = model,
-        args = training_args,
-        data_collator = tr.DataCollatorForTokenClassification(tokenizer = tokenizer, padding = "longest"),
-        train_dataset = dataset,
-        #eval_dataset=mapped_tokenzed_dataset['validation']
-    )
-    #trainer.train()
-    '''
+            if step % 250 == 0:
+                print(loss)
 
 if __name__ == "__main__":
     project_dir = pathlib.Path(__file__).parent.parent
