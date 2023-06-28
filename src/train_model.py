@@ -3,18 +3,57 @@ import confuse
 import pathlib
 import argparse
 
+import torch
 import datasets as ds
+import accelerate as ac
 import transformers as tr
 import utils.token as tu
 import utils.sequence as su
 
 rng = numpy.random.default_rng()
 
+'''
+class AminoTrainer(Trainer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def compute_loss(self, model, inputs):
+        # implement custom logic here
+        custom_loss = 1
+        return custom_loss
+'''
+
 def train_model(tokenizer, dataset, training_directory, args):
     tokenizer.deprecation_warnings["Asking-to-pad-a-fast-tokenizer"] = True
+    dataset = dataset.remove_columns("token_type_ids")
+
+    accelerator = ac.Accelerator()
+    device = accelerator.device
+    dataset = dataset.train_test_split(test_size = 0.1)
+    collator = tr.DataCollatorForTokenClassification(tokenizer = tokenizer, padding = "longest")
+    dataloader = torch.utils.data.DataLoader(dataset["train"], batch_size = 8, collate_fn = collator)
     config = tr.DistilBertConfig(vocab_size = tokenizer.vocab_size)
     model = tr.DistilBertForMaskedLM(config = config)
+    optimizer = torch.optim.AdamW(params = model.parameters())
     
+    model, optimizer, data = accelerator.prepare(model, optimizer, dataloader)
+
+    model.train()
+    for epoch in range(10):
+        for step, batch in enumerate(data):
+            batch.to(device)
+
+            optimizer.zero_grad()
+
+            output = model(**batch)
+            loss = output.loss
+            #oss = torch.nn.functional.cross_entropy(output, targets)
+
+            accelerator.backward(loss)
+
+            optimizer.step()
+
+    '''
     training_args = tr.TrainingArguments(training_directory, **args)
     trainer = tr.Trainer(
         model = model,
@@ -23,7 +62,8 @@ def train_model(tokenizer, dataset, training_directory, args):
         train_dataset = dataset,
         #eval_dataset=mapped_tokenzed_dataset['validation']
     )
-    trainer.train()
+    #trainer.train()
+    '''
 
 if __name__ == "__main__":
     project_dir = pathlib.Path(__file__).parent.parent
