@@ -28,7 +28,7 @@ def train_model(tokenizer, dataset, training_directory, args):
     tokenizer.deprecation_warnings["Asking-to-pad-a-fast-tokenizer"] = True
     dataset = dataset.remove_columns("token_type_ids")
 
-    accelerator = ac.Accelerator(fp16 = True)
+    accelerator = ac.Accelerator(mixed_precision = "fp16")
     collator = tr.DataCollatorForTokenClassification(tokenizer = tokenizer, padding = "longest")
     dataloader = torch.utils.data.DataLoader(dataset, batch_size = 8, collate_fn = collator)
     config = tr.DistilBertConfig(vocab_size = tokenizer.vocab_size)
