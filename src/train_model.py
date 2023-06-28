@@ -12,8 +12,8 @@ rng = numpy.random.default_rng()
 
 def train_model(tokenizer, dataset, training_directory, args):
     tokenizer.deprecation_warnings["Asking-to-pad-a-fast-tokenizer"] = True
-    config = tr.BertConfig(vocab_size = tokenizer.vocab_size)
-    model = tr.BertForMaskedLM(config = config)
+    config = tr.DistilBertConfig(vocab_size = tokenizer.vocab_size)
+    model = tr.DistilBertForMaskedLM(config = config)
     
     training_args = tr.TrainingArguments(training_directory, **args)
     trainer = tr.Trainer(
@@ -40,6 +40,6 @@ if __name__ == "__main__":
     tokenizer = tu.load_tokenizer(args.tokenizer_file)
     
     dataset = ds.load_dataset("jhilgar/uniparc", split = "train", streaming = True)
-    dataset = dataset.map(lambda x: tokenizer(x["input_ids"], truncation = True, max_length = 512), batched = True, batch_size = 2000)
+    dataset = dataset.map(lambda x: tu.prune_and_tokenize_dataset(x, tokenizer), batched = True, batch_size = 2000)
     dataset = dataset.map(lambda x: su.mask_data(x, tokenizer), batched = True, batch_size = 2000)
     train_model(tokenizer, dataset, config["training_directory"].get(str), config["trainingarguments"].get())
