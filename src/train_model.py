@@ -50,9 +50,6 @@ def train_model(tokenizer, dataset, training_directory, args):
             accelerator.backward(output.loss)
             optimizer.step()
     
-            
-            return
-
             if step % 250 == 0:
                 print(loss)
 
@@ -73,4 +70,5 @@ if __name__ == "__main__":
     dataset = ds.load_dataset("jhilgar/uniparc", split = "train", streaming = True)
     dataset = dataset.map(lambda x: tu.prune_and_tokenize_dataset(x, tokenizer), batched = True, batch_size = 2000)
     dataset = dataset.map(lambda x: su.mask_data(x, tokenizer), batched = True, batch_size = 2000)
-    train_model(tokenizer, dataset, config["training_directory"].get(str), config["trainingarguments"].get())
+    print(next(iter(dataset)))
+    #train_model(tokenizer, dataset, config["training_directory"].get(str), config["trainingarguments"].get())

@@ -20,7 +20,9 @@ def prune_and_tokenize_dataset(sequences, tokenizer):
             del_idxs.append(idx)
         elif (X_count / seq_len) > 0.05:
             del_idxs.append(idx)
-        
+
     sequences["input_ids"] = [sequence for idx, sequence in enumerate(sequences["input_ids"]) if idx not in del_idxs]
     sequences = tokenizer(sequences["input_ids"])
+    sequences["permutes"] = [[0] * len(sequence) for sequence in sequences["input_ids"]]
+
     return sequences
