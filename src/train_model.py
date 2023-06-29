@@ -51,7 +51,7 @@ def train_model(tokenizer, dataset, training_directory, args):
             optimizer.step()
     
             if step % 250 == 0:
-                print(loss)
+                print(output.loss)
 
 if __name__ == "__main__":
     project_dir = pathlib.Path(__file__).parent.parent
