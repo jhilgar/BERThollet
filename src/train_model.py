@@ -12,8 +12,8 @@ rng = numpy.random.default_rng()
 
 def train_model(tokenizer, dataset, training_directory, args):
     tokenizer.deprecation_warnings["Asking-to-pad-a-fast-tokenizer"] = True
-    config = tr.BertConfig(vocab_size = tokenizer.vocab_size)
-    model = tr.BertForMaskedLM(config = config)
+    config = tr.DistilBertConfig(vocab_size = tokenizer.vocab_size)
+    model = tr.DistilBertForMaskedLM(config = config)
     
     training_args = tr.TrainingArguments(training_directory, **args)
     trainer = tr.Trainer(
