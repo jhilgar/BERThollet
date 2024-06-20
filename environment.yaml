@@ -2,6 +2,7 @@ name: BERThollet
 channels:
   - conda-forge
   - nvidia
+  - pytorch
   - huggingface
   - defaults
 dependencies:

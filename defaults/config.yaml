@@ -11,9 +11,15 @@ trainingarguments:
   save_total_limit: 2
   prediction_loss_only: True
   remove_unused_columns: True
+<<<<<<< HEAD
   logging_steps: 50
   max_steps: 25000000
   per_device_train_batch_size: 3
+=======
+  logging_steps: 250
+  max_steps: 25000000
+  per_device_train_batch_size: 8
+>>>>>>> 9a179f54c12650255b50eb7ad71c596e9e47c536
   optim: adamw_torch
   learning_rate: 0.00001
   adam_epsilon: 0.000001
